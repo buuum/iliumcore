@@ -66,7 +66,7 @@ class Ilium
 
         $app->share(Session::class, [$this, 'getSession']);
 
-        $this->twig = new Twig();
+        $this->twig = new Twig($this->container);
         $this->doctrine = new Doctrine(
             $this->config->get('db'),
             $this->config->get('root_path') . '/Proxies',
@@ -81,29 +81,28 @@ class Ilium
         $this->iniModules();
 
         $app->share('command_bus', function () {
-            return $this->command_bus->get();
+            return ($this->command_bus)();
         });
 
         $app->share('query_bus', function () {
-            return $this->query_bus->get();
+            return ($this->query_bus)();
         });
 
         $app->share('twig', function () {
-            $this->twig->setRouter($this->container->get('router'));
-            return $this->twig->get();
+            return ($this->twig)();
         });
 
         $app->share(DebugStack::class, DebugStack::class);
         $app->share(EntityManager::class, function () {
-            return $this->doctrine->get();
+            return ($this->doctrine)();
         });
 
         $app->share('router', function () {
-            return $this->router->get();
+            return ($this->router)();
         });
 
         $app->share('console', function () {
-            return $this->console->get();
+            return ($this->console)();
         });
 
     }

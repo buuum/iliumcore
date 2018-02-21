@@ -25,7 +25,7 @@ class QueryBus
         $this->queries = array_merge($this->queries, $commands);
     }
 
-    public function get()
+    public function __invoke()
     {
         $locator = new AllLocator(
             $this->container,

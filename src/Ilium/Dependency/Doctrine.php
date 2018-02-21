@@ -34,7 +34,7 @@ class Doctrine
         $this->doctrine_mappings[] = $path;
     }
 
-    public function get()
+    public function __invoke()
     {
         $dbParams = array(
             'driver'        => 'pdo_mysql',

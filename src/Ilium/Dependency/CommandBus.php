@@ -31,7 +31,7 @@ class CommandBus
         $this->commands_middlewares[] = $middleware;
     }
 
-    public function get()
+    public function __invoke()
     {
         $locator = new AllLocator(
             $this->container,

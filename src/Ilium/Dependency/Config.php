@@ -45,7 +45,7 @@ class Config
         $this->configs[$name] = $value;
     }
 
-    public function prepareConfig()
+    protected function prepareConfig()
     {
         $root_path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
 
@@ -70,7 +70,7 @@ class Config
 
     }
 
-    public function getScope($scopes)
+    protected function getScope($scopes)
     {
         foreach ($scopes as $key => $options) {
             if (!preg_match($options['regex'], $this->path, $matches)) {

@@ -2,20 +2,21 @@
 
 namespace Ilium\Dependency;
 
+use League\Container\Container;
 use RouteF\RouteCollection;
 
 class Twig
 {
-
+    private $container;
     /**
      * @var RouteCollection
      */
     private $router;
     private $paths = [];
 
-    public function setRouter(RouteCollection $router)
+    public function __construct(Container $container)
     {
-        $this->router = $router;
+        $this->container = $container;
     }
 
     public function addPath($path)
@@ -28,8 +29,9 @@ class Twig
         $this->paths = array_merge($this->paths, $paths);
     }
 
-    public function get()
+    public function __invoke()
     {
+        $this->router = $this->container->get('router');
         $loader = new \Twig_Loader_Filesystem($this->paths);
 
         $twig = new \Twig_Environment($loader, array(

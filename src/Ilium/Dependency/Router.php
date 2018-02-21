@@ -22,7 +22,7 @@ class Router
         $this->routes[] = $closure;
     }
 
-    public function get()
+    public function __invoke()
     {
         $router = new RouteCollection($this->container, [
             'cacheFile'     => __DIR__ . '/route2.cache',

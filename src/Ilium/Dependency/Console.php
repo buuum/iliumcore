@@ -17,7 +17,7 @@ class Console
         $this->container = $container;
     }
 
-    public function get()
+    public function __invoke()
     {
         $console = new Application();
         foreach ($this->commands as $command) {
