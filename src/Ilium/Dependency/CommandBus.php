@@ -14,7 +14,7 @@ class CommandBus
 {
     private $container;
     private $commands = [];
-    //private $commands_middlewares = [];
+    private $commands_middlewares = [];
 
     public function __construct(ContainerInterface $container)
     {
@@ -24,6 +24,11 @@ class CommandBus
     public function addCommands(array $commands)
     {
         $this->commands = array_merge($this->commands, $commands);
+    }
+
+    public function addMiddleware($middleware)
+    {
+        $this->commands_middlewares[] = $middleware;
     }
 
     public function get()
@@ -41,6 +46,12 @@ class CommandBus
 
         $command_bus_execution = [];
         $command_bus_execution[] = new LockingMiddleware();
+        if (!empty($this->commands_middlewares)) {
+            $reverse = array_reverse($this->commands_middlewares);
+            foreach ($reverse as $middleware) {
+                $command_bus_execution[] = $middleware;
+            }
+        }
         $command_bus_execution[] = $commandHandlers;
 
         $command_bus = new \League\Tactician\CommandBus($command_bus_execution);
