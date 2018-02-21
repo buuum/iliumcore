@@ -1,0 +1,34 @@
+{
+  "name": "buuum/iliumcore",
+  "type": "library",
+  "description": "Core ilium",
+  "homepage": "https://github.com/buuum/iliumcore",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Alfons Martinez",
+      "email": "alfonsmartinezparra@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Ilium\\": "src/Ilium"
+    },
+    "files": [
+      "src/Ilium/helpers/helpers.php"
+    ]
+  },
+  "require": {
+    "php": ">=7.0.0",
+    "league/container": "^2.4",
+    "doctrine/orm": "^2.6",
+    "symfony/http-foundation": "^3.4",
+    "league/tactician": "^1.0",
+    "symfony/yaml": "^3.4",
+    "buuum/routef": "^1.0",
+    "twig/twig": "^2.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  }
+}
