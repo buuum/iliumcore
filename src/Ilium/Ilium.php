@@ -137,4 +137,24 @@ class Ilium
         );
     }
 
+    public function get($alias, array $args = [])
+    {
+        return $this->container->get($alias, $args);
+    }
+
+    public function has($alias)
+    {
+        return $this->container->has($alias);
+    }
+
+    public function add($alias, $concrete = null, $share = false)
+    {
+        return $this->container->add($alias, $concrete, $share);
+    }
+
+    public function share($alias, $concrete = null)
+    {
+        return $this->container->share($alias, $concrete);
+    }
+
 }
