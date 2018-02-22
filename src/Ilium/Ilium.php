@@ -119,7 +119,7 @@ class Ilium
         }
     }
 
-    protected function getSession()
+    public function getSession()
     {
         $session = new Session();
         if ($this->config->get('scope.config.session_name')) {
