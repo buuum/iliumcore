@@ -38,10 +38,10 @@ class Doctrine
     {
         $dbParams = array(
             'driver'        => 'pdo_mysql',
-            'host'          => $this->config_db->host,
-            'user'          => $this->config_db->user,
-            'password'      => $this->config_db->pass,
-            'dbname'        => $this->config_db->name,
+            'host'          => $this->config_db['host'],
+            'user'          => $this->config_db['user'],
+            'password'      => $this->config_db['pass'],
+            'dbname'        => $this->config_db['name'],
             'charset'       => 'utf8',
             'driverOptions' => [
                 1002 => 'SET NAMES utf8'
