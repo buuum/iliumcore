@@ -13,6 +13,7 @@ class Twig
      */
     private $router;
     private $paths = [];
+    private $functions = [];
 
     public function __construct(Container $container)
     {
@@ -29,6 +30,14 @@ class Twig
         $this->paths = array_merge($this->paths, $paths);
     }
 
+    public function addFunction($alias, callable $callback, array $options = [])
+    {
+        $this->functions[$alias] = [
+            'callback' => $callback,
+            'options'  => $options
+        ];
+    }
+
     public function __invoke()
     {
         $this->router = $this->container->get('router');
@@ -40,16 +49,17 @@ class Twig
         ));
         $twig->addExtension(new \Twig_Extension_Debug());
 
-        $function = new \Twig_Function('route', function ($name, $options = []) {
+
+        $twig->addFunction(new \Twig_Function('route', function ($name, $options = []) {
             return $this->router->getUrl($name, $options);
-        });
-
-        $functione = new \Twig_Function('_e', function ($name) {
+        }));
+        $twig->addFunction(new \Twig_Function('_e', function ($name) {
             return $name;
-        });
+        }));
 
-        $twig->addFunction($function);
-        $twig->addFunction($functione);
+        foreach ($this->functions as $alias => $function) {
+            $twig->addFunction(new \Twig_Function($alias, $function['callback'], $function['options']));
+        }
 
         return $twig;
     }
