@@ -2,7 +2,6 @@
 
 namespace Ilium\Dependency;
 
-
 use Ilium\Command\AllLocator;
 use Ilium\Command\ExecuteInflector;
 use League\Tactician\Handler\CommandHandlerMiddleware;
@@ -31,6 +30,11 @@ class CommandBus
         $this->commands_middlewares[] = $middleware;
     }
 
+    public function addMiddlewares(array $middlewares)
+    {
+        $this->commands_middlewares = array_merge($this->commands_middlewares, $middlewares);
+    }
+
     public function __invoke()
     {
         $locator = new AllLocator(
@@ -49,6 +53,9 @@ class CommandBus
         if (!empty($this->commands_middlewares)) {
             $reverse = array_reverse($this->commands_middlewares);
             foreach ($reverse as $middleware) {
+                if (is_string($middleware)) {
+                    $middleware = $this->container->get($middleware);
+                }
                 $command_bus_execution[] = $middleware;
             }
         }
