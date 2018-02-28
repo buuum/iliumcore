@@ -54,6 +54,17 @@ class Config
         $config = Yaml::parse(file_get_contents($root_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.yml'));
         $host_config = empty($host_config) ? $config["default_host"] : $host_config;
         $config_file = $root_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $host_config . '.yml';
+        
+        if(!file_exists($config_file)){
+            preg_match('/\/.*?\//', $this->path, $matches);
+
+            if (!empty($matches[0])) {
+                $host_config = $host_config . str_replace_last('/', '', str_replace_first('/', '_', $matches[0]));
+            }
+
+            $config_file = $root_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $host_config . '.yml';
+        }
+        
         $vars = file_exists($config_file) ? Yaml::parse(file_get_contents($config_file)) : [];
         $config = ['root_path' => $root_path] + $vars + $config;
         date_default_timezone_set($config['timezone']);
