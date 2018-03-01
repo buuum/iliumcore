@@ -13,6 +13,7 @@ class Config
     private $host;
     private $query;
     private $configs = [];
+    private $root_path;
 
     public function __construct($path)
     {
@@ -22,6 +23,7 @@ class Config
         $this->host = $url['host'];
         $this->path = $url['path'];
         $this->query = $url['query'] ?? null;
+        $this->root_path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
 
         $this->prepareConfig();
     }
@@ -47,15 +49,16 @@ class Config
 
     protected function prepareConfig()
     {
-        $root_path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
 
         $host_config = str_replace('www', '', $this->host);
 
-        $config = Yaml::parse(file_get_contents($root_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.yml'));
+        $config = Yaml::parse(file_get_contents($this->root_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.yml'));
         $host_config = empty($host_config) ? $config["default_host"] : $host_config;
-        $config_file = $root_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $host_config . '.yml';
-        $vars = file_exists($config_file) ? Yaml::parse(file_get_contents($config_file)) : [];
-        $config = ['root_path' => $root_path] + $vars + $config;
+
+        $vars = $this->parseConfig($this->getConfigFilePath($host_config));
+        $vars = $this->checkConfigs($vars);
+
+        $config = ['root_path' => $this->root_path] + $vars + $config;
         date_default_timezone_set($config['timezone']);
 
         ////////////////
@@ -79,6 +82,31 @@ class Config
             return $options;
         }
         return false;
+    }
+
+    protected function checkConfigs($vars)
+    {
+        if (!empty($vars['configs'])) {
+            foreach ($vars['configs'] as $key => $options) {
+                if (!preg_match($options['regex'], $this->path, $matches)) {
+                    continue;
+                }
+                $file = $this->getConfigFilePath($options['config_file']);
+                return array_merge($vars, $this->parseConfig($file));
+            }
+        }
+
+        return $vars;
+    }
+
+    protected function parseConfig($config_file)
+    {
+        return file_exists($config_file) ? Yaml::parse(file_get_contents($config_file)) : [];
+    }
+
+    protected function getConfigFilePath($name)
+    {
+        return $this->root_path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $name . '.yml';
     }
 
 
