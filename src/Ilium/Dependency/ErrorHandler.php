@@ -27,8 +27,6 @@ class ErrorHandler
 
         }
 
-        ob_start('ob_gzhandler');
-        ob_start([$this, "sanitize_output"]);
     }
 
     public function setErrorHandler(ErrorHandlerInterface $handleError)
@@ -39,28 +37,6 @@ class ErrorHandler
     public function setShutdownFunction(ErrorHandlerInterface $handleError)
     {
         $this->shutdown_handler = $handleError;
-    }
-
-    public function sanitize_output($buffer)
-    {
-
-        $search = array(
-            '/\>[^\S ]+/s',     // strip whitespaces after tags, except space
-            '/[^\S ]+\</s',     // strip whitespaces before tags, except space
-            '/(\s)+/s',         // shorten multiple whitespace sequences
-            '/<!--(.|\s)*?-->/' // Remove HTML comments
-        );
-
-        $replace = array(
-            '>',
-            '<',
-            '\\1',
-            ''
-        );
-
-        $buffer = preg_replace($search, $replace, $buffer);
-
-        return $buffer;
     }
 
     public function shutdownFunction()
