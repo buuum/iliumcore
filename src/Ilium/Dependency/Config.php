@@ -19,6 +19,10 @@ class Config
     {
         $this->url = $path;
         $url = parse_url($path);
+        if (empty($url['scheme'])) {
+            $this->url = 'http://' . $path;
+            $url = parse_url($this->url);
+        }
         $this->scheme = $url['scheme'];
         $this->host = $url['host'];
         $this->path = $url['path'];

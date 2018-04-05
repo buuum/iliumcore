@@ -56,13 +56,13 @@ class Ilium
      */
     public $console;
 
-    public function __construct()
+    public function __construct($defaultUri = '')
     {
         $this->container = $app = new Container();
 
         $app->share(Request::class, Request::createFromGlobals());
 
-        $this->config = new Config($app->get(Request::class)->getUri());
+        $this->config = new Config($defaultUri ? $defaultUri : $app->get(Request::class)->getUri());
 
         $app->share(Session::class, [$this, 'getSession']);
 
@@ -155,6 +155,10 @@ class Ilium
     public function share($alias, $concrete = null)
     {
         return $this->container->share($alias, $concrete);
+    }
+
+    public function getRouter(){
+        return 'router';
     }
 
 }
