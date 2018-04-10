@@ -15,6 +15,7 @@ use Doctrine\ORM\EntityManager;
 use League\Container\Container;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 
 class Ilium
 {
@@ -121,9 +122,15 @@ class Ilium
 
     public function getSession()
     {
-        $session = new Session();
-        if ($this->config->get('scope.config.session_name')) {
-            $session->setName($this->config->get('scope.config.session_name'));
+        $options = [];
+        if ($this->config->get('scope.config.session.options')) {
+            foreach ($this->config->get('scope.config.session.options') as $k => $v){
+                $options[$k] = $v;
+            }
+        }
+        $session = new Session(new NativeSessionStorage($options));
+        if ($this->config->get('scope.config.session.name')) {
+            $session->setName($this->config->get('scope.config.session.name'));
         }
         return $session;
     }
@@ -157,7 +164,8 @@ class Ilium
         return $this->container->share($alias, $concrete);
     }
 
-    public function getRouter(){
+    public function getRouter()
+    {
         return 'router';
     }
 
