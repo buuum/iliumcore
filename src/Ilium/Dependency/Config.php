@@ -62,7 +62,9 @@ class Config
         $vars = $this->parseConfig($this->getConfigFilePath($host_config));
         $vars = $this->checkConfigs($vars);
 
-        $config = ['root_path' => $this->root_path] + $vars + $config;
+        $config = array_replace_recursive($config,$vars);
+        $config = ['root_path' => $this->root_path] + $config;
+
         date_default_timezone_set($config['timezone']);
 
         ////////////////
