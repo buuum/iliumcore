@@ -26,7 +26,8 @@
     "league/tactician": "^1.0",
     "symfony/yaml": "^3.4",
     "buuum/routef": "^1.0",
-    "twig/twig": "^2.4"
+    "twig/twig": "^2.4",
+    "symfony/var-dumper": "^3.4"
   },
   "require-dev": {
     "phpunit/phpunit": "*"

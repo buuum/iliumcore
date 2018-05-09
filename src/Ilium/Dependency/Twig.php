@@ -4,6 +4,7 @@ namespace Ilium\Dependency;
 
 use League\Container\Container;
 use RouteF\RouteCollection;
+use Twig\Extension\AbstractExtension;
 
 class Twig
 {
@@ -14,6 +15,7 @@ class Twig
     private $router;
     private $paths = [];
     private $functions = [];
+    private $extensions = [];
 
     public function __construct(Container $container)
     {
@@ -28,6 +30,11 @@ class Twig
     public function addPaths(array $paths)
     {
         $this->paths = array_merge($this->paths, $paths);
+    }
+
+    public function addExtension(AbstractExtension $extension)
+    {
+        $this->extensions[] = $extension;
     }
 
     public function addFunction($alias, callable $callback, array $options = [])
@@ -53,9 +60,10 @@ class Twig
         $twig->addFunction(new \Twig_Function('route', function ($name, $options = []) {
             return $this->router->getUrl($name, $options);
         }));
-        $twig->addFunction(new \Twig_Function('_e', function ($name) {
-            return $name;
-        }));
+
+        foreach ($this->extensions as $extension) {
+            $twig->addExtension($extension);
+        }
 
         foreach ($this->functions as $alias => $function) {
             $twig->addFunction(new \Twig_Function($alias, $function['callback'], $function['options']));
