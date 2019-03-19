@@ -15,7 +15,9 @@ class Twig
     private $router;
     private $paths = [];
     private $functions = [];
+    private $filters = [];
     private $extensions = [];
+    private $tokenparsers = [];
 
     public function __construct(Container $container)
     {
@@ -45,6 +47,19 @@ class Twig
         ];
     }
 
+    public function addFilter($alias, callable $callback, array $options = [])
+    {
+        $this->filters[$alias] = [
+            'callback' => $callback,
+            'options'  => $options
+        ];
+    }
+
+    public function addTokenParser($tokenparser)
+    {
+        $this->tokenparsers[] = $tokenparser;
+    }
+
     public function __invoke()
     {
         $this->router = $this->container->get('router');
@@ -56,6 +71,9 @@ class Twig
         ));
         $twig->addExtension(new \Twig_Extension_Debug());
 
+        foreach ($this->tokenparsers as $tokenparser) {
+            $twig->addTokenParser($tokenparser);
+        }
 
         $twig->addFunction(new \Twig_Function('route', function ($name, $options = []) {
             return $this->router->getUrl($name, $options);
