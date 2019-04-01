@@ -87,6 +87,10 @@ class Twig
             $twig->addFunction(new \Twig_Function($alias, $function['callback'], $function['options']));
         }
 
+        foreach ($this->filters as $alias => $function) {
+            $twig->addFilter(new \Twig_Filter($alias, $function['callback'], $function['options']));
+        }
+
         return $twig;
     }
 
