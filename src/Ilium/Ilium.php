@@ -131,6 +131,13 @@ class Ilium
         $session = new Session(new NativeSessionStorage($options));
         if ($this->config->get('scope.config.session.name')) {
             $session->setName($this->config->get('scope.config.session.name'));
+            if ($sessionName = $session->get('session_name')) {
+                if ($sessionName != $this->config->get('scope.config.session.name')) {
+                    $session->clear();
+                }
+            } else {
+                $session->set('session_name', $this->config->get('scope.config.session.name'));
+            }
         }
         return $session;
     }
