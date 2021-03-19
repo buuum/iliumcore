@@ -48,7 +48,7 @@ class ErrorHandler
             E_CORE_ERROR,
             E_COMPILE_ERROR
         );
-        if (in_array($error['type'], $save_errors)) {
+        if ($error && in_array($error['type'], $save_errors)) {
             $errortypes = array(
                 E_ERROR         => 'Fatal error',
                 E_CORE_ERROR    => 'Fatal error (Core Error)',
