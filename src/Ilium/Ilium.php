@@ -57,7 +57,9 @@ class Ilium
      */
     public $console;
 
-    public function __construct($defaultUri = '')
+    protected $flashBag;
+
+    public function __construct($defaultUri = '', $flashBag = null)
     {
         $this->container = $app = new Container();
 
@@ -65,6 +67,7 @@ class Ilium
 
         $this->config = new Config($defaultUri ? $defaultUri : $app->get(Request::class)->getUri());
 
+        $this->flashBag = $flashBag;
         $app->share(Session::class, [$this, 'getSession']);
 
         $this->twig = new Twig($this->container);
@@ -124,11 +127,15 @@ class Ilium
     {
         $options = [];
         if ($this->config->get('scope.config.session.options')) {
-            foreach ($this->config->get('scope.config.session.options') as $k => $v){
+            foreach ($this->config->get('scope.config.session.options') as $k => $v) {
                 $options[$k] = $v;
             }
         }
+
         $session = new Session(new NativeSessionStorage($options));
+        if ($this->flashBag) {
+            $session->registerBag($this->flashBag);
+        }
         if ($this->config->get('scope.config.session.name')) {
             $session->setName($this->config->get('scope.config.session.name'));
             if ($sessionName = $session->get('session_name')) {
@@ -138,6 +145,9 @@ class Ilium
             } else {
                 $session->set('session_name', $this->config->get('scope.config.session.name'));
             }
+        }
+        if ($this->flashBag) {
+            $session->getFlashBag()->setId($session->getId());
         }
         return $session;
     }
