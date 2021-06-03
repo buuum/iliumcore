@@ -146,9 +146,6 @@ class Ilium
                 $session->set('session_name', $this->config->get('scope.config.session.name'));
             }
         }
-        if ($this->flashBag) {
-            $session->getFlashBag()->setId($session->getId());
-        }
         return $session;
     }
 
