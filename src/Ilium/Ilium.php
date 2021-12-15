@@ -13,8 +13,10 @@ use Ilium\Dependency\Twig;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityManager;
 use League\Container\Container;
+use Redis;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 
 class Ilium
@@ -132,7 +134,23 @@ class Ilium
             }
         }
 
-        $session = new Session(new NativeSessionStorage($options));
+        $redisConfig = $this->config->get('scope.config.session.redis');
+        if ($redisConfig && is_array($redisConfig) && !empty($redisConfig["host"]) && !empty($redisConfig["port"])) {
+            $optionsHandler = [];
+            if (!empty($options["prefix"])) {
+                $optionsHandler["prefix"] = $options["prefix"];
+            }
+            $redis = new Redis();
+            $redis->connect($redisConfig["host"], $redisConfig["port"]);
+            $redisHandler = new RedisSessionHandler(
+                $redis,
+                $optionsHandler
+            );
+            $session = new Session(new NativeSessionStorage($options, $redisHandler));
+        } else {
+            $session = new Session(new NativeSessionStorage($options));
+        }
+
         if ($this->flashBag) {
             $session->registerBag($this->flashBag);
         }
