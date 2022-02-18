@@ -142,6 +142,50 @@ class Ilium
             }
             $redis = new Redis();
             $redis->connect($redisConfig["host"], $redisConfig["port"]);
+            $redisHandler = new RedisHandler(
+                $redis,
+                $optionsHandler
+            );
+            $session = new Session(new NativeSessionStorage($options, $redisHandler), null, $this->flashBag);
+            $this->flashBag->setRedis($redis);
+        } else {
+            $session = new Session(new NativeSessionStorage($options));
+            if ($this->flashBag) {
+                $session->registerBag($this->flashBag);
+            }
+        }
+
+        if ($this->config->get('scope.config.session.name')) {
+            $session->setName($this->config->get('scope.config.session.name'));
+            if ($sessionName = $session->get('session_name')) {
+                if ($sessionName != $this->config->get('scope.config.session.name')) {
+                    $session->clear();
+                }
+            } else {
+                $session->set('session_name', $this->config->get('scope.config.session.name'));
+            }
+        }
+        return $session;
+    }
+
+    public function getSession2()
+    {
+        $options = [];
+        if ($this->config->get('scope.config.session.options')) {
+            foreach ($this->config->get('scope.config.session.options') as $k => $v) {
+                $options[$k] = $v;
+            }
+        }
+
+
+        $redisConfig = $this->config->get('scope.config.session.redis');
+        if ($redisConfig && is_array($redisConfig) && !empty($redisConfig["host"]) && !empty($redisConfig["port"])) {
+            $optionsHandler = [];
+            if (!empty($options["prefix"])) {
+                $optionsHandler["prefix"] = $options["prefix"];
+            }
+            $redis = new Redis();
+            $redis->connect($redisConfig["host"], $redisConfig["port"]);
             $redisHandler = new RedisSessionHandler(
                 $redis,
                 $optionsHandler
