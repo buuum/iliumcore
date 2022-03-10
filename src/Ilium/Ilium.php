@@ -60,8 +60,9 @@ class Ilium
     public $console;
 
     protected $flashBag;
+    protected $ignoreRedis;
 
-    public function __construct($defaultUri = '', $flashBag = null)
+    public function __construct($defaultUri = '', $flashBag = null, $ignoreRedis = false)
     {
         $this->container = $app = new Container();
 
@@ -69,6 +70,7 @@ class Ilium
 
         $this->config = new Config($defaultUri ? $defaultUri : $app->get(Request::class)->getUri());
 
+        $this->ignoreRedis = $ignoreRedis;
         $this->flashBag = $flashBag;
         $app->share(Session::class, [$this, 'getSession']);
 
@@ -135,7 +137,7 @@ class Ilium
         }
 
         $redisConfig = $this->config->get('scope.config.session.redis');
-        if ($redisConfig && is_array($redisConfig) && !empty($redisConfig["host"]) && !empty($redisConfig["port"])) {
+        if (!$this->ignoreRedis && $redisConfig && is_array($redisConfig) && !empty($redisConfig["host"]) && !empty($redisConfig["port"])) {
             $optionsHandler = [];
             if (!empty($options["prefix"])) {
                 $optionsHandler["prefix"] = $options["prefix"];
